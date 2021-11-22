@@ -1,7 +1,13 @@
 package com.gildedrose
 
-fun main(args: Array<String>) {
+import java.io.ByteArrayOutputStream
+import java.io.PrintStream
 
+fun main(args: Array<String>) {
+    System.out.outputTextFixture(days = if (args.isNotEmpty()) args[0].toInt() + 1 else 8, ::GildedRoseOriginal)
+}
+
+fun PrintStream.outputTextFixture(days: Int, factory: (Array<Item>) -> GildedRose ) {
     println("OMGHAI!")
 
     val items = arrayOf(Item("+5 Dexterity Vest", 10, 20), //
@@ -13,16 +19,12 @@ fun main(args: Array<String>) {
             Item("Backstage passes to a TAFKAL80ETC concert", 10, 49),
             Item("Backstage passes to a TAFKAL80ETC concert", 5, 49),
             // this conjured item does not work properly yet
-            Item("Conjured Mana Cake", 3, 6))
+            // Item("Conjured Mana Cake", 3, 6)
+    )
 
-    val app = GildedRose(items)
+    val app = factory(items)
 
-    var days = 2
-    if (args.size > 0) {
-        days = Integer.parseInt(args[0]) + 1
-    }
-
-    for (i in 0..days - 1) {
+    for (i in 0 until days) {
         println("-------- day $i --------")
         println("name, sellIn, quality")
         for (item in items) {
@@ -31,6 +33,12 @@ fun main(args: Array<String>) {
         println()
         app.updateQuality()
     }
+}
 
-
+fun outputTextFixtureAsString(days: Int, factory: (Array<Item>) -> GildedRose): String {
+    val byteArrayOutputStream = ByteArrayOutputStream()
+    val printStream = PrintStream(byteArrayOutputStream, true, "utf-8")
+    printStream.outputTextFixture(days, factory)
+    printStream.close()
+    return byteArrayOutputStream.toString("utf-8")
 }
